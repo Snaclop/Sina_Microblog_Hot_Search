@@ -2,9 +2,6 @@ import requests
 import datetime
 import pandas as pd
 import datetime
-from datetime import timedelta
-
-time = datetime.datetime.today()
 
 url = 'https://weibo.com/ajax/side/hotSearch'
 
@@ -17,7 +14,7 @@ for i in range(len(resp['data']['realtime'])):
     item = resp['data']['realtime'][i]['word']
     hot_list.append(item)
 
-data = {'时间': time, '热搜': hot_list}
+data = {'时间': datetime.datetime.today(), '热搜': hot_list}
 DataFrame = pd.DataFrame(data=data)
 print(DataFrame)
 
