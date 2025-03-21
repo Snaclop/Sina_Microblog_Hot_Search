@@ -1,0 +1,45 @@
+name: Data Scraping
+
+on:
+  schedule:
+    # 每天的特定时间（UTC 时间）运行
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 检出仓库代码
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PUSH_TOKEN }}
+
+      # 设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      # 安装依赖
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+          pip install pandas
+
+      # 运行爬虫脚本
+      - name: Run scraping script
+        run: |
+          python microblog_hotsearch_spiders.py
+
+      # 提交更改
+      - name: Commit changes
+        run: |
+          git config user.name "Snaclop"
+          git config user.email "Billimachavior@126.com"
+          git add .
+          git commit -m "Update data" || echo "No changes to commit"
+          git push
