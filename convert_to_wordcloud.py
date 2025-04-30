@@ -5,7 +5,7 @@ import csv
 #  读取hot_search.csv文件
 
 data = []
-with open("Archieved_feb.csv", mode="r", encoding="utf-8") as file:
+with open("Archieved_apr.csv", mode="r", encoding="utf-8") as file:
     csv_reader = csv.reader(file)
     for row in csv_reader:
         data.append(row[1])
@@ -24,7 +24,7 @@ for item in data:
 
 words = ' '.join(words_list)
 
-font_path = 'C:/Windows/Fonts/simhei.ttf'
+font_path = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
 w = WordCloud(font_path=font_path, height=800, width=1000)
 w.generate(str(words))
 w.to_file(rf'./assets/feb.png')
