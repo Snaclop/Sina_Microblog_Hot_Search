@@ -23,3 +23,8 @@
 
 7月热搜
 ![jul_png](./assets/jul.png)
+
+
+由于去年8月开始接口`https://weibo.com/ajax/side/hotSearch`被微博禁止后，无法再继续获取热搜数据，因此停更一年左右
+
+现已找到新的获取热搜的网址`https://s.weibo.com/top/summary`，很快就能重启项目
