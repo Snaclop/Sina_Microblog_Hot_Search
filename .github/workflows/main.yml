@@ -2,44 +2,52 @@ name: Data Scraping
 
 on:
   schedule:
-    # 每天的特定时间（UTC 时间）运行
+    # 每天北京时间 20:00（UTC 12:00）；实际启动可能略有延迟。
     - cron: '0 12 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+concurrency:
+  group: hot-search-data-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   scrape-and-commit:
+    # 手动运行时也只允许向默认分支写入数据。
+    if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      # 检出仓库代码
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
-          token: ${{ secrets.PUSH_TOKEN }}
+          fetch-depth: 0
 
-      # 设置 Python 环境
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v7
         with:
-          python-version: '3.x'
+          python-version: '3.12'
 
-      # 安装依赖
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-          pip install pandas
+        run: python -m pip install requests pandas
 
-      # 运行爬虫脚本
       - name: Run scraping script
-        run: |
-          python microblog_hotsearch_spiders.py
+        run: python microblog_hotsearch_spiders.py
 
-      # 提交更改
       - name: Commit changes
+        env:
+          TARGET_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          git config user.name "Snaclop"
-          git config user.email "Billimachavior@163.com"
-          git add .
-          git commit -m "Update data" || echo "No changes to commit"
-          git push
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- Hot_search.csv
+          if git diff --cached --quiet; then
+            echo "No new hot-search data to commit."
+            exit 0
+          fi
+          git commit -m "Update hot-search data"
+          git pull --rebase origin "$TARGET_BRANCH"
+          git push origin "HEAD:$TARGET_BRANCH"
