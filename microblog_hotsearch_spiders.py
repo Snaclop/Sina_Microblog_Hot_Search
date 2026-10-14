@@ -3,7 +3,7 @@ import datetime
 import pandas as pd
 import datetime
 
-url = "https://api.xhus.cn/api/rweibo?encode=json"
+url = "https://60s.viki.moe/v2/weibo"
 
 resp = requests.get(url=url)
 resp.close()
@@ -11,7 +11,7 @@ resp = resp.json()
 hot_list = []
 
 for i in range(len(resp['data'])):
-    item = resp['data'][i]['word']
+    item = resp['data'][i]['title']
     hot_list.append(item)
 
 data = {'时间': datetime.datetime.today(), '热搜': hot_list}
